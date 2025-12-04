@@ -1,0 +1,21 @@
+<!-- public/gallery.html -->
+<!DOCTYPE html>
+<html>
+<head><title>Monster Gallery</title></head>
+<body>
+  <h1>Monster Gallery</h1>
+  <div id="carousel"></div>
+  <script>
+    fetch('/api/monsters')
+      .then(res => res.json())
+      .then(monsters => {
+        const carousel = document.getElementById('carousel');
+        monsters.forEach(monster => {
+          const div = document.createElement('div');
+          div.innerHTML = `<img src="${monster.imageUrl}" width="200"><br>${monster.name} - Period ${monster.period}`;
+          carousel.appendChild(div);
+        });
+      });
+  </script>
+</body>
+</html>

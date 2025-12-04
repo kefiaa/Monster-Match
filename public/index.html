@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Monster Match!</title>
+  <link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/@uploadcare/file-uploader@1/web/uc-file-uploader-regular.min.css"
+  >
+</head>
+<body>
+  <h1>Monster Maker</h1>
+
+  <p>Input Your Monster Name</p>
+  <form id="monsterForm">
+    <input type="text" id="monsterText" name="monsterName" required>
+    <br><br>
+
+    <p>Input Your Class Period</p>
+    <select id="periodSelect" name="period" required>
+      <option value="1">Period 1</option>
+      <option value="2">Period 2</option>
+      <option value="3">Period 3</option>
+      <option value="4">Period 4</option>
+      <option value="5">Period 5</option>
+      <option value="6">Period 6</option>
+      <option value="7">Period 7</option>
+      <option value="8">Period 8</option>
+    </select>
+
+    <br><br><br><br>
+
+    <!-- Uploadcare -->
+    <uc-config
+      ctx-name="my-uploader"
+      source-list="local, camera, gdrive"
+      files-view-mode="grid"
+      pubkey="e2769fa942bb1dd2fd89"
+    ></uc-config>
+
+    <uc-file-uploader-regular
+      ctx-name="my-uploader"
+      class="uc-light uc-gray"
+    ></uc-file-uploader-regular>
+
+    <uc-upload-ctx-provider ctx-name="my-uploader"></uc-upload-ctx-provider>
+
+    <br><br><br><br>
+
+    <button type="submit">Submit</button>
+  </form>
+
+  <script type="module">
+    import * as UC from 'https://cdn.jsdelivr.net/npm/@uploadcare/file-uploader@1/web/uc-file-uploader-regular.min.js';
+    UC.defineComponents(UC);
+
+    let uploadedImageUrl = "";
+
+    const ctxProvider = document.querySelector('uc-upload-ctx-provider[ctx-name="my-uploader"]');
+    ctxProvider.addEventListener('file-upload-success', (event) => {
+      uploadedImageUrl = event.detail.cdnUrl;
+      console.log('Uploaded image URL:', uploadedImageUrl);
+    });
+
+    const form = document.getElementById('monsterForm');
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault();
+
+      const name = document.getElementById('monsterText').value;
+      const period = document.getElementById('periodSelect').value;
+
+      if (!uploadedImageUrl) {
+        alert('Please upload an image first!');
+        return;
+      }
+
+      // send to backend
+      const res = await fetch('/api/monsters', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, period, imageUrl: uploadedImageUrl })
+      });
+
+      if (!res.ok) {
+        alert('Error saving monster');
+        return;
+      }
+
+      // optional localStorage
+      localStorage.setItem('monsterName', name);
+      localStorage.setItem('classPeriod', period);
+      localStorage.setItem('imageUrl', uploadedImageUrl);
+
+      // redirect to gallery
+      window.location.href = '/gallery.html';
+    });
+  </script>
+</body>
+</html>
