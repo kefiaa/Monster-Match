@@ -3,8 +3,5 @@
   "version": "1.0.0",
   "scripts": {
     "build": "echo no build"
-  },
-  "dependencies": {
-    "@netlify/neon": "^1.0.0"
   }
 }
